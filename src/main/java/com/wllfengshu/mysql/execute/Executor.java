@@ -29,8 +29,15 @@ public class Executor {
         return execute(executePlanDTO, storageEngine);
     }
 
+    /**
+     * 选择存储引擎
+     * @param executePlanDTO
+     * @return
+     * @throws CustomException
+     */
     private StorageEngine chooseStorage(ExecutePlanDTO executePlanDTO) throws CustomException{
-        StorageType storageType = StringUtils.giveStorageEngineNameByTableName(executePlanDTO.getSql());
+        //TODO 这里根据第一张表来选择存储引擎（也就是说不支持不同存储引擎的表进行关联查询）
+        StorageType storageType = StringUtils.giveStorageEngineNameByTableName(executePlanDTO.getDbName(),executePlanDTO.getTableNames().get(0));
         switch (storageType) {
             case Innodb:
                 return new Innodb();
@@ -41,6 +48,13 @@ public class Executor {
         }
     }
 
+    /**
+     * 操作存储引擎
+     * @param executePlanDTO
+     * @param storageEngine
+     * @return
+     * @throws CustomException
+     */
     private ResultSet execute(ExecutePlanDTO executePlanDTO, StorageEngine storageEngine) throws CustomException{
         switch (executePlanDTO.getSqlType()) {
             case Insert:

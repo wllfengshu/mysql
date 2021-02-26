@@ -13,6 +13,11 @@ import java.util.List;
 public class PendingSqlDTO extends SqlVO {
 
     /**
+     * 数据库名
+     */
+    private String dbName;
+
+    /**
      * sql类型
      */
     private SqlType sqlType;

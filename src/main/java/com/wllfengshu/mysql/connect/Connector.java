@@ -25,9 +25,16 @@ public class Connector {
     private Analyzer analyzer;
 
     private Connector() throws CustomException {
+        //1 建立连接
         connect(new UserVO());
+        //2 选择数据库
+        String dbName = giveUseDb(null);
+        //3 获取sql信息
         PendingSqlDTO pendingSqlDTO = giveSqlInfo(new SqlVO());
+        pendingSqlDTO.setDbName(dbName);
+        //4 鉴权
         authentication(pendingSqlDTO);
+        //5 run
         analyzer.start(pendingSqlDTO);
     }
 
@@ -37,6 +44,14 @@ public class Connector {
      */
     private void connect(UserVO userVO) {
 
+    }
+
+    /**
+     * 选择使用哪个数据库
+     * @param useDbSql
+     */
+    private String giveUseDb(String useDbSql) {
+        return StringUtils.giveDbNameByUseDbSql(useDbSql);
     }
 
     /**
