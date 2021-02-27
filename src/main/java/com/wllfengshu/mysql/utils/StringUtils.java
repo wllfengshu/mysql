@@ -155,23 +155,15 @@ public class StringUtils {
      * @return
      */
     public static List<String> readDirForDirName(String path) throws CustomException{
-        Resource resource = new ClassPathResource(path);
-        if (!resource.exists()) {
-            throw new CustomException("读取路径下的所有文件夹名失败-" + path + "目录不存在", CustomException.ExceptionName.FAIL_READ_DIR_FOR_DIR_NAME);
-        }
         List<String> result = new ArrayList<>();
-        try {
-            File dir = resource.getFile();
-            if (!dir.isDirectory()){
-                return result;
+        File dir = StringUtils.giveFile(path);
+        if (!dir.isDirectory()){
+            return result;
+        }
+        for (File f : Objects.requireNonNull(dir.listFiles())){
+            if (f.isDirectory()){
+                result.add(f.getName());
             }
-            for (File f : Objects.requireNonNull(dir.listFiles())){
-                if (f.isDirectory()){
-                    result.add(f.getName());
-                }
-            }
-        }catch (Exception e) {
-            throw new CustomException("读取路径下的所有文件夹名失败", CustomException.ExceptionName.FAIL_READ_DIR_FOR_DIR_NAME);
         }
         return result;
     }
@@ -184,28 +176,39 @@ public class StringUtils {
      * @return
      */
     public static List<String> readDirForFileName(String path, String suffix) throws CustomException{
-        Resource resource = new ClassPathResource(path);
-        if (!resource.exists()) {
-            throw new CustomException("读取路径下的所有文件名失败-" + path + "目录不存在", CustomException.ExceptionName.FAIL_READ_DIR_FOR_FILE_NAME);
-        }
         List<String> result = new ArrayList<>();
-        try {
-            File dir = resource.getFile();
-            if (!dir.isDirectory()){
-                return result;
-            }
-            File[] files = Objects.requireNonNull(dir.listFiles());
-            for (File f : files) {
-                if (!f.isDirectory()) {
-                    String fName = f.getName();
-                    if (org.apache.commons.lang3.StringUtils.isEmpty(suffix) || fName.endsWith(suffix)){
-                        result.add(fName.substring(0, fName.lastIndexOf(".")));
-                    }
+        File dir = StringUtils.giveFile(path);
+        if (!dir.isDirectory()){
+            return result;
+        }
+        File[] files = Objects.requireNonNull(dir.listFiles());
+        for (File f : files) {
+            if (!f.isDirectory()) {
+                String fName = f.getName();
+                if (org.apache.commons.lang3.StringUtils.isEmpty(suffix) || fName.endsWith(suffix)){
+                    result.add(fName.substring(0, fName.lastIndexOf(".")));
                 }
             }
-        }catch (Exception e) {
-            throw new CustomException("读取路径下的所有文件名失败", CustomException.ExceptionName.FAIL_READ_DIR_FOR_FILE_NAME);
         }
         return result;
+    }
+
+    /**
+     * 获取文件
+     *
+     * @param path
+     * @return
+     * @throws CustomException
+     */
+    public static File giveFile(String path) throws CustomException{
+        Resource resource = new ClassPathResource(path);
+        if (!resource.exists()) {
+            throw new CustomException("无法找到文件或目录-" + path, CustomException.ExceptionName.NOT_FOUND_FILE_OR_DIR);
+        }
+        try {
+            return resource.getFile();
+        }catch (Exception e) {
+            throw new CustomException("获取文件或目录失败", CustomException.ExceptionName.NOT_FOUND_FILE_OR_DIR);
+        }
     }
 }

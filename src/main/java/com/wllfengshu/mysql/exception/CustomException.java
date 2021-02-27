@@ -20,6 +20,8 @@ public class CustomException extends Exception {
         FAIL_READ_DIR_FOR_DIR_NAME(1002),
         // 读取路径下的所有文件夹失败
         FAIL_READ_DIR_FOR_FILE_NAME(1003),
+        // 无法找到文件或目录
+        NOT_FOUND_FILE_OR_DIR(1004)
         ;
 
         private int code;
