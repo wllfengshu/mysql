@@ -1,5 +1,6 @@
 package com.wllfengshu.mysql.storage.impl;
 
+import com.wllfengshu.mysql.common.Constant;
 import com.wllfengshu.mysql.exception.CustomException;
 import com.wllfengshu.mysql.model.dto.ExecutePlanDTO;
 import com.wllfengshu.mysql.model.entity.ResultSet;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -43,7 +45,7 @@ public class Innodb implements StorageEngine {
     @Override
     public ResultSet delete(ExecutePlanDTO executePlanDTO) throws CustomException {
         //1 找到对应的文件
-
+        File tableFile = FileUtils.giveTableFile(executePlanDTO.getDbName(), executePlanDTO.getTableNames().get(0));
         //2 找到对应的行
 
         //3 删除对应的行
@@ -54,7 +56,7 @@ public class Innodb implements StorageEngine {
     @Override
     public ResultSet update(ExecutePlanDTO executePlanDTO) throws CustomException {
         //1 找到对应的文件
-
+        File tableFile = FileUtils.giveTableFile(executePlanDTO.getDbName(), executePlanDTO.getTableNames().get(0));
         //2 找到对应的行
 
         //3 更新数据
@@ -67,9 +69,11 @@ public class Innodb implements StorageEngine {
     @Override
     public ResultSet select(ExecutePlanDTO executePlanDTO) throws CustomException {
         //1 找到对应的文件
-        File tableFile = FileUtils.giveTableFile(executePlanDTO.getDbName(), executePlanDTO.getTableNames().get(0));
-        //2 找到对应的行
-//        FileUtils.readFile()
-        return null;
+        String content = FileUtils.readFile(Constant.DATA_PATH + "/" + executePlanDTO.getDbName() + "/" + executePlanDTO.getTableNames().get(0) + Constant.DATA_FILE_IBD);
+        //2 找到对应的行 TODO 暂时直接读取全部的
+        ResultSet resultSet = new ResultSet(true);
+        String[] split = content.split("\n");
+        resultSet.setContent(Arrays.asList(split));
+        return resultSet;
     }
 }
