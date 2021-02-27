@@ -7,14 +7,9 @@ import com.wllfengshu.mysql.model.enumerate.StorageType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 字符串工具类
@@ -118,97 +113,5 @@ public class StringUtils {
         String frmString = Cache.DB_TABLE_FRM_MAP.get(dbName + '-' + tableName);
         String primaryKey = frmString.split("PRIMARY KEY \\(")[1].split("\\)")[0].replace("`","").trim();
         return primaryKey;
-    }
-
-    /**
-     * 读取文件为字符串
-     *
-     * @param path
-     * @return
-     */
-    public static String readFile(String path) throws CustomException{
-        Resource resource = new ClassPathResource(path);
-        if (!resource.exists()) {
-            throw new CustomException("读取文件失败-" + path + "文件不存在", CustomException.ExceptionName.FAIL_READ_FILE);
-        }
-        StringBuilder sb = new StringBuilder();
-        try (InputStream input = resource.getInputStream();
-             Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
-             BufferedReader br = new BufferedReader(reader)) {
-            String temp;
-            while (null != (temp = br.readLine())) {
-                //TODO 排除空行、#开头的行
-                if (!"".equals(temp) && !"\n".equals(temp) && !"\r\n".equals(temp) && !temp.startsWith("#")) {
-                    sb.append(temp);
-                }
-            }
-        } catch (Exception e) {
-            throw new CustomException("读取文件失败", CustomException.ExceptionName.FAIL_READ_FILE);
-        }
-        return sb.toString();
-    }
-
-    /**
-     * 读取路径下的所有文件夹名
-     *
-     * @param path
-     * @return
-     */
-    public static List<String> readDirForDirName(String path) throws CustomException{
-        List<String> result = new ArrayList<>();
-        File dir = StringUtils.giveFile(path);
-        if (!dir.isDirectory()){
-            return result;
-        }
-        for (File f : Objects.requireNonNull(dir.listFiles())){
-            if (f.isDirectory()){
-                result.add(f.getName());
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 读取路径下的所有文件名(不带后缀)
-     *
-     * @param path
-     * @param suffix 指定后缀
-     * @return
-     */
-    public static List<String> readDirForFileName(String path, String suffix) throws CustomException{
-        List<String> result = new ArrayList<>();
-        File dir = StringUtils.giveFile(path);
-        if (!dir.isDirectory()){
-            return result;
-        }
-        File[] files = Objects.requireNonNull(dir.listFiles());
-        for (File f : files) {
-            if (!f.isDirectory()) {
-                String fName = f.getName();
-                if (org.apache.commons.lang3.StringUtils.isEmpty(suffix) || fName.endsWith(suffix)){
-                    result.add(fName.substring(0, fName.lastIndexOf(".")));
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 获取文件
-     *
-     * @param path
-     * @return
-     * @throws CustomException
-     */
-    public static File giveFile(String path) throws CustomException{
-        Resource resource = new ClassPathResource(path);
-        if (!resource.exists()) {
-            throw new CustomException("无法找到文件或目录-" + path, CustomException.ExceptionName.NOT_FOUND_FILE_OR_DIR);
-        }
-        try {
-            return resource.getFile();
-        }catch (Exception e) {
-            throw new CustomException("获取文件或目录失败", CustomException.ExceptionName.NOT_FOUND_FILE_OR_DIR);
-        }
     }
 }

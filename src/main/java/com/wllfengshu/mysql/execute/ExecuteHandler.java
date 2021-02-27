@@ -8,6 +8,7 @@ import com.wllfengshu.mysql.storage.StorageEngine;
 import com.wllfengshu.mysql.storage.impl.Innodb;
 import com.wllfengshu.mysql.storage.impl.MyIsam;
 import com.wllfengshu.mysql.utils.StringUtils;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class ExecuteHandler {
+
+    @NonNull
+    private Innodb innodb;
+    @NonNull
+    private MyIsam myIsam;
 
     /**
      * 选择存储引擎
@@ -28,9 +34,9 @@ public class ExecuteHandler {
         StorageType storageType = StringUtils.giveStorageEngineNameByTableName(executePlanDTO.getDbName(),executePlanDTO.getTableNames().get(0));
         switch (storageType) {
             case Innodb:
-                return new Innodb();
+                return innodb;
             case MyIsam:
-                return new MyIsam();
+                return myIsam;
             default:
                 throw new CustomException("无法确定存储引擎", CustomException.ExceptionName.ILLEGAL_PARAM);
         }

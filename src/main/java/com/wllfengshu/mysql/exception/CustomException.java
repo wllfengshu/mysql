@@ -16,12 +16,16 @@ public class CustomException extends Exception {
         MUST_USE_DB(1000),
         // 读取文件失败
         FAIL_READ_FILE(1001),
-        // 读取路径下的所有文件夹名失败
-        FAIL_READ_DIR_FOR_DIR_NAME(1002),
-        // 读取路径下的所有文件夹失败
-        FAIL_READ_DIR_FOR_FILE_NAME(1003),
         // 无法找到文件或目录
-        NOT_FOUND_FILE_OR_DIR(1004)
+        NOT_FOUND_FILE_OR_DIR(1002),
+        // insert失败
+        FAIL_INSERT(2001),
+        // delete失败
+        FAIL_DELETE(3001),
+        // update失败
+        FAIL_UPDATE(4001),
+        // select失败
+        FAIL_SELECT(5001),
         ;
 
         private int code;

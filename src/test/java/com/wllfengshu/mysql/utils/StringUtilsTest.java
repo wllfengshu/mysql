@@ -1,8 +1,6 @@
 package com.wllfengshu.mysql.utils;
 
-import com.alibaba.fastjson.JSON;
 import com.wllfengshu.mysql.common.Cache;
-import com.wllfengshu.mysql.common.Constant;
 import com.wllfengshu.mysql.exception.CustomException;
 import com.wllfengshu.mysql.model.enumerate.SqlType;
 import com.wllfengshu.mysql.model.enumerate.StorageType;
@@ -82,30 +80,6 @@ public class StringUtilsTest {
     public void testGiveStorageEngineNameByTableName() throws CustomException{
         StorageType storageType = StringUtils.giveStorageEngineNameByTableName("test", "t_user");
         assert storageType == StorageType.Innodb;
-    }
-
-    @Test
-    public void testReadFile() throws CustomException{
-        String fileContent = StringUtils.readFile("data/test/t_user.frm");
-        System.out.println(fileContent);
-        assert null != fileContent;
-        assert fileContent.length() > 0;
-        assert fileContent.contains("CREATE TABLE");
-        assert fileContent.contains("ENGINE");
-    }
-
-    @Test
-    public void testReadDirForDirName() throws CustomException{
-        List<String> dbNames = StringUtils.readDirForDirName(Constant.DATA_PATH);
-        assert null != dbNames;
-        System.out.println(JSON.toJSONString(dbNames));
-    }
-
-    @Test
-    public void testReadDirForFileName() throws CustomException{
-        List<String> fileNames = StringUtils.readDirForFileName(Constant.DATA_PATH + "/test/", ".frm");
-        assert null != fileNames;
-        System.out.println(JSON.toJSONString(fileNames));
     }
 
     @Test

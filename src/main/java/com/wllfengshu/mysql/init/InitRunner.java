@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.wllfengshu.mysql.common.Cache;
 import com.wllfengshu.mysql.common.Constant;
 import com.wllfengshu.mysql.exception.CustomException;
-import com.wllfengshu.mysql.utils.StringUtils;
+import com.wllfengshu.mysql.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -39,11 +39,11 @@ public class InitRunner implements CommandLineRunner {
      */
     private void cacheDbTableFrmMap() throws CustomException {
         log.info("正在缓存所有的表结构");
-        List<String> dbNames = StringUtils.readDirForDirName(Constant.DATA_PATH);
+        List<String> dbNames = FileUtils.readDirForDirName(Constant.DATA_PATH);
         for (String dbName : dbNames){
-            List<String> tableNames = StringUtils.readDirForFileName(Constant.DATA_PATH + '/' + dbName, Constant.DATA_FILE_FRM);
+            List<String> tableNames = FileUtils.readDirForFileName(Constant.DATA_PATH + '/' + dbName, Constant.DATA_FILE_FRM);
             for (String tableName : tableNames){
-                String tableContent = StringUtils.readFile(Constant.DATA_PATH + '/' + dbName + '/' + tableName + Constant.DATA_FILE_FRM);
+                String tableContent = FileUtils.readFile(Constant.DATA_PATH + '/' + dbName + '/' + tableName + Constant.DATA_FILE_FRM);
                 Cache.DB_TABLE_FRM_MAP.put(dbName + '-' + tableName, tableContent);
             }
         }
