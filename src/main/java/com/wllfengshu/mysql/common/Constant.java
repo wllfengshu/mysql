@@ -17,4 +17,14 @@ public class Constant {
      * 数据存储的路径
      */
     public static final String DATA_PATH = "/data";
+
+    /**
+     * 表结构文件
+     */
+    public static final String DATA_FILE_FRM = ".frm";
+
+    /**
+     * 表数据文件
+     */
+    public static final String DATA_FILE_IBD = ".ibd";
 }

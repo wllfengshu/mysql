@@ -15,7 +15,7 @@ import java.util.Map;
 public class Cache {
 
     /**
-     *
+     * 表结构：<数据库名-表名, 表结构>
      */
-    public static final Map<String, String> MAP = new HashMap<>();
+    public static final Map<String, String> DB_TABLE_FRM_MAP = new HashMap<>();
 }

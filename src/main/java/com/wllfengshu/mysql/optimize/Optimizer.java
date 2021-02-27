@@ -22,27 +22,12 @@ import org.springframework.context.annotation.Configuration;
 public class Optimizer {
 
     @NonNull
+    private OptimizeHandler optimizeHandler;
+    @NonNull
     private Executor executor;
 
     public ResultSet start(AnalyseSqlDTO analyseSqlDTO) throws CustomException {
-        ExecutePlanDTO executePlanDTO = optimize(analyseSqlDTO);
+        ExecutePlanDTO executePlanDTO = optimizeHandler.optimize(analyseSqlDTO);
         return executor.start(executePlanDTO);
-    }
-
-    /**
-     * 生成执行计划，选择索引
-     * @param analyseSqlDTO
-     * @return
-     */
-    private ExecutePlanDTO optimize(AnalyseSqlDTO analyseSqlDTO) {
-        ExecutePlanDTO executePlanDTO = new ExecutePlanDTO();
-
-        executePlanDTO.setSql(analyseSqlDTO.getSql());
-        executePlanDTO.setSqlType(analyseSqlDTO.getSqlType());
-        executePlanDTO.setTableNames(analyseSqlDTO.getTableNames());
-        executePlanDTO.setFields(analyseSqlDTO.getFields());
-        executePlanDTO.setIndexColumn(null);// 选择索引
-
-        return executePlanDTO;
     }
 }
