@@ -1,12 +1,17 @@
 package com.wllfengshu.mysql.connect;
 
 import com.wllfengshu.mysql.analyse.Analyzer;
-import com.wllfengshu.mysql.exception.CustomException;
-import com.wllfengshu.mysql.model.dto.PendingSqlDTO;
-import com.wllfengshu.mysql.model.vo.SqlVO;
-import com.wllfengshu.mysql.model.vo.UserVO;
+import com.wllfengshu.mysql.configs.EnvConfig;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.ExecutorService;
 
 /**
  * 连接器
@@ -16,34 +21,30 @@ import lombok.extern.slf4j.Slf4j;
  * 2、解析出表名、sql类型等数据
  * 3、鉴权
  */
+@Order(2)
 @Slf4j
-public class Connector {
+@Configuration
+@RequiredArgsConstructor
+public class Connector implements CommandLineRunner {
 
     @NonNull
-    private ConnectHandler connectHandler;
+    private ExecutorService executorService;
+    @NonNull
+    private EnvConfig envConfig;
     @NonNull
     private Analyzer analyzer;
 
-    private Connector() throws CustomException {
-        //1 建立连接
-        connect(new UserVO());
-        //2 选择数据库
-        String dbName = connectHandler.giveUseDb(null);
-        //3 获取sql信息
-        PendingSqlDTO pendingSqlDTO = connectHandler.giveSqlInfo(new SqlVO());
-        pendingSqlDTO.setDbName(dbName);
-        //4 鉴权
-        connectHandler.authentication(pendingSqlDTO);
-        //5 run
-        analyzer.start(pendingSqlDTO);
-    }
-
-    /**
-     * 建立连接
-     *
-     * @param userVO
-     */
-    private void connect(UserVO userVO) {
-
+    @Override
+    public void run(String... args) {
+        log.info("正在启动mysql...");
+        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(envConfig.getPort()))){
+            while (true) {
+                log.info("mysql启动完毕");
+                Socket socket = serverSocket.accept();
+                executorService.execute(new ConnectHandler(analyzer, socket));
+            }
+        }catch (Exception e) {
+            log.error("mysql启动失败");
+        }
     }
 }

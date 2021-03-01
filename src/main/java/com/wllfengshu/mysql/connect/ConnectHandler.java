@@ -1,18 +1,46 @@
 package com.wllfengshu.mysql.connect;
 
+import com.wllfengshu.mysql.analyse.Analyzer;
 import com.wllfengshu.mysql.exception.CustomException;
 import com.wllfengshu.mysql.model.dto.PendingSqlDTO;
 import com.wllfengshu.mysql.model.enumerate.SqlType;
 import com.wllfengshu.mysql.model.vo.SqlVO;
 import com.wllfengshu.mysql.utils.StringUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
+
+import java.net.Socket;
 
 @Slf4j
-@Configuration
-@RequiredArgsConstructor
-public class ConnectHandler {
+public class ConnectHandler implements Runnable{
+
+    private Analyzer analyzer;
+    private Socket socket;
+
+    public ConnectHandler(Analyzer analyzer, Socket socket) {
+        this.analyzer = analyzer;
+        this.socket = socket;
+    }
+
+    @Override
+    public void run() {
+        try {
+            //1 建立连接
+            String inputSql = StringUtils.inputStream2String(socket.getInputStream());
+//            connect(new UserVO());
+            //2 选择数据库
+            String dbName = giveUseDb("use test;");
+            //3 获取sql信息
+            SqlVO sqlVO = new SqlVO();
+            PendingSqlDTO pendingSqlDTO = giveSqlInfo(sqlVO);
+            pendingSqlDTO.setDbName(dbName);
+            //4 鉴权
+            authentication(pendingSqlDTO);
+            //5 run
+            analyzer.start(pendingSqlDTO);
+        }catch (Exception e){
+            log.error("ConnectHandler启动失败");
+        }
+    }
 
     /**
      * 选择使用哪个数据库

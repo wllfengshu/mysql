@@ -22,14 +22,14 @@ public class EnvConfig implements InitializingBean {
     /**
      * 服务端配置
      */
-    @Value("${db_ip:127.0.0.1}")
-    private String dbIp;
-    @Value("${db_port:3306}")
-    private String dbPort;
-    @Value("${db_username:root}")
-    private String dbUsername;
-    @Value("${db_password:root}")
-    private String dbPassword;
+    @Value("${ip:127.0.0.1}")
+    private String ip;
+    @Value("${port:3306}")
+    private String port;
+    @Value("${username:root}")
+    private String username;
+    @Value("${password:root}")
+    private String password;
 
     @Override
     public void afterPropertiesSet() throws Exception {

@@ -8,6 +8,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +27,9 @@ public class StringUtils {
      * @param useDbSql
      * @return
      */
-    public static String giveDbNameByUseDbSql(String useDbSql) throws CustomException{
+    public static String giveDbNameByUseDbSql(String useDbSql) throws CustomException {
         useDbSql = useDbSql.trim();
-        if (!useDbSql.startsWith("use")){
+        if (!useDbSql.startsWith("use")) {
             throw new CustomException("选择数据库时，必须使用use关键字", CustomException.ExceptionName.MUST_USE_DB);
         }
         return useDbSql.split("use")[1].trim().split(";")[0].trim();
@@ -39,8 +42,9 @@ public class StringUtils {
      * delete from t_user where id='2';
      * update t_user set username='aaaaaa',nickname='cccccc' where id=1;
      * select * from t_user where id=1;
-     *
+     * <p>
      * TODO 这里如果是查询，则暂时只考虑单表
+     *
      * @param sql
      * @param sqlType
      * @return
@@ -77,10 +81,10 @@ public class StringUtils {
         List<String> fields = new ArrayList<>();
         if (sql.startsWith("select")) {
             String fieldsString = sql.split("select")[1].split("from")[0].trim();
-            if ("*".equals(fieldsString)){
+            if ("*".equals(fieldsString)) {
                 //TODO 这里暂时直接存*
                 fields.add("*");
-            }else {
+            } else {
                 for (String f : fieldsString.split(",")) {
                     fields.add(f.trim());
                 }
@@ -96,7 +100,7 @@ public class StringUtils {
      * @param tableName
      * @return
      */
-    public static StorageType giveStorageEngineNameByTableName(String dbName, String tableName) throws CustomException{
+    public static StorageType giveStorageEngineNameByTableName(String dbName, String tableName) throws CustomException {
         String frmString = Cache.DB_TABLE_FRM_MAP.get(dbName + '-' + tableName);
         String storageName = frmString.split("ENGINE=")[1].split(" ")[0];
         return "MyISAM".equals(storageName) ? StorageType.MyIsam : StorageType.Innodb;
@@ -111,7 +115,28 @@ public class StringUtils {
      */
     public static String givePrimaryKeyByTableName(String dbName, String tableName) {
         String frmString = Cache.DB_TABLE_FRM_MAP.get(dbName + '-' + tableName);
-        String primaryKey = frmString.split("PRIMARY KEY \\(")[1].split("\\)")[0].replace("`","").trim();
+        String primaryKey = frmString.split("PRIMARY KEY \\(")[1].split("\\)")[0].replace("`", "").trim();
         return primaryKey;
+    }
+
+    /**
+     * inputStream转字符串
+     *
+     * @param inputStream
+     * @return
+     * @throws CustomException
+     */
+    public static String inputStream2String(InputStream inputStream) throws CustomException{
+        byte[] buffer = new byte[1024];
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            int read;
+            while ((read = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, read);
+            }
+            return byteArrayOutputStream.toString();
+        } catch (IOException e) {
+            throw new CustomException("inputStream2String发生异常", CustomException.ExceptionName.ILLEGAL_PARAM);
+        }
     }
 }
