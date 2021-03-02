@@ -35,4 +35,13 @@ public class ResultSet {
      * 内容
      */
     private List<Object> content;
+
+    @Override
+    public String toString() {
+        return "ResultSet{" +
+                "success=" + success +
+                ", failReasons='" + failReasons + '\'' +
+                ", content=" + content +
+                '}';
+    }
 }

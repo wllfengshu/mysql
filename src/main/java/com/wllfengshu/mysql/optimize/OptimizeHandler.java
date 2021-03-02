@@ -21,6 +21,7 @@ public class OptimizeHandler {
     public ExecutePlanDTO optimize(AnalyseSqlDTO analyseSqlDTO) {
         ExecutePlanDTO executePlanDTO = new ExecutePlanDTO();
 
+        executePlanDTO.setDbName(analyseSqlDTO.getDbName());
         executePlanDTO.setSql(analyseSqlDTO.getSql());
         executePlanDTO.setSqlType(analyseSqlDTO.getSqlType());
         executePlanDTO.setTableNames(analyseSqlDTO.getTableNames());

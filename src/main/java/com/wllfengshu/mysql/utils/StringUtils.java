@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -122,21 +121,20 @@ public class StringUtils {
     /**
      * inputStream转字符串
      *
-     * @param inputStream
+     * @param is
      * @return
      * @throws CustomException
      */
-    public static String inputStream2String(InputStream inputStream) throws CustomException{
+    public static String inputStream2String(InputStream is) throws CustomException{
+        StringBuffer sb = new StringBuffer();
         byte[] buffer = new byte[1024];
         try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            int read;
-            while ((read = inputStream.read(buffer)) != -1) {
-                byteArrayOutputStream.write(buffer, 0, read);
+            while (is.read(buffer) != -1) {
+                sb.append(new String(buffer));
             }
-            return byteArrayOutputStream.toString();
         } catch (IOException e) {
             throw new CustomException("inputStream2String发生异常", CustomException.ExceptionName.ILLEGAL_PARAM);
         }
+        return sb.toString();
     }
 }

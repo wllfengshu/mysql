@@ -38,13 +38,13 @@ public class Connector implements CommandLineRunner {
     public void run(String... args) {
         log.info("正在启动mysql...");
         try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(envConfig.getPort()))){
+            log.info("mysql启动完毕");
             while (true) {
-                log.info("mysql启动完毕");
                 Socket socket = serverSocket.accept();
                 executorService.execute(new ConnectHandler(analyzer, socket));
             }
         }catch (Exception e) {
-            log.error("mysql启动失败");
+            log.error("mysql启动失败", e);
         }
     }
 }

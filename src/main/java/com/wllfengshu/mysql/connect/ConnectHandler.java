@@ -3,11 +3,15 @@ package com.wllfengshu.mysql.connect;
 import com.wllfengshu.mysql.analyse.Analyzer;
 import com.wllfengshu.mysql.exception.CustomException;
 import com.wllfengshu.mysql.model.dto.PendingSqlDTO;
+import com.wllfengshu.mysql.model.entity.ResultSet;
 import com.wllfengshu.mysql.model.enumerate.SqlType;
 import com.wllfengshu.mysql.model.vo.SqlVO;
 import com.wllfengshu.mysql.utils.StringUtils;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 @Slf4j
@@ -21,25 +25,36 @@ public class ConnectHandler implements Runnable{
         this.socket = socket;
     }
 
+    @SneakyThrows
     @Override
     public void run() {
-        try {
-            //1 建立连接
-            String inputSql = StringUtils.inputStream2String(socket.getInputStream());
+        //1 建立连接
+        InputStream is = socket.getInputStream();
+        String inputSql = StringUtils.inputStream2String(is);
+        log.info(inputSql);
 //            connect(new UserVO());
-            //2 选择数据库
-            String dbName = giveUseDb("use test;");
-            //3 获取sql信息
-            SqlVO sqlVO = new SqlVO();
-            PendingSqlDTO pendingSqlDTO = giveSqlInfo(sqlVO);
-            pendingSqlDTO.setDbName(dbName);
-            //4 鉴权
-            authentication(pendingSqlDTO);
-            //5 run
-            analyzer.start(pendingSqlDTO);
-        }catch (Exception e){
-            log.error("ConnectHandler启动失败");
-        }
+        //2 选择数据库
+        String dbName = giveUseDb("use test;");
+        //3 获取sql信息
+        SqlVO sqlVO = new SqlVO();
+        sqlVO.setSql(inputSql);
+        PendingSqlDTO pendingSqlDTO = giveSqlInfo(sqlVO);
+        pendingSqlDTO.setDbName(dbName);
+        //4 鉴权
+        authentication(pendingSqlDTO);
+        //5 run
+        ResultSet resultSet = analyzer.start(pendingSqlDTO);
+        String resultSetStr = resultSet.toString();
+        log.info("返回"+resultSetStr);
+        //6 返回
+        OutputStream os = socket.getOutputStream();
+        os.write(resultSetStr.getBytes("UTF-8"));
+        os.flush();
+
+//        is.close();
+        os.close();
+//        socket.close();
+        log.info("成功响应");
     }
 
     /**

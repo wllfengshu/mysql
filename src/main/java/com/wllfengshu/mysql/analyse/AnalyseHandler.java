@@ -42,6 +42,7 @@ public class AnalyseHandler {
     public AnalyseSqlDTO analyse(PendingSqlDTO pendingSqlDTO) {
         AnalyseSqlDTO analyseSqlDTO = new AnalyseSqlDTO();
 
+        analyseSqlDTO.setDbName(pendingSqlDTO.getDbName());
         analyseSqlDTO.setSql(pendingSqlDTO.getSql());
         analyseSqlDTO.setSqlType(pendingSqlDTO.getSqlType());
         analyseSqlDTO.setTableNames(pendingSqlDTO.getTableNames());
